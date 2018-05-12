@@ -432,7 +432,7 @@ function onDocumentKeyDown(event) {
         myMesh.position.x -= xSpeed;
     } else if (keyCode == 68 || keyCode == 39) {
         myMesh.position.x += xSpeed;
-    } else if (keyCode == 32) {
+    } else if (keyCode == 32 || keyCode == 13) {
         myMesh.position.set(0, 0, 0);
     }
 };
