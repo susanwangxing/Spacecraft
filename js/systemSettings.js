@@ -361,8 +361,8 @@ SystemSettings.cloth = {
 // My System
 ////////////////////////////////////////////////////////////////////////////////
 var myMesh;
-var xSpeed = 1.5;
-var ySpeed = 1.5;
+var xSpeed = 2.0;
+var ySpeed = 2.0;
 SystemSettings.mySystem = {
 
     // Particle Material
@@ -373,9 +373,9 @@ SystemSettings.mySystem = {
     initializerSettings : {
         position: new THREE.Vector3 ( 0.0, 30.0, 0.0),
         velocity: new THREE.Vector3 ( 5.0, 5.0, 5.0),
-        color:    new THREE.Vector4 ( 0.0, 0.0, 0.0, 1.0 ),
+        color:    new THREE.Vector4 ( 0.9, 0.7, 0.1, 1.0 ),
         lifetime: 5,
-        size:     20.0,
+        size:     50.0,
     },
 
     // Updater
@@ -388,18 +388,21 @@ SystemSettings.mySystem = {
 
     // Scene
     maxParticles:  2000,
-    particlesFreq: 1000,
+    particlesFreq: 2000,
     createScene : function () {
-        /*
         // bottom plane
-        var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
+        var plane_geo = new THREE.PlaneBufferGeometry( 2667, 1500, 1, 1 );
+        var texture = new THREE.ImageUtils.loadTexture( 'images/space2.jpg' );
         // var phong     = new THREE.MeshPhongMaterial( {color: 0x6B8E23, side: THREE.DoubleSide } );
-        var material = new THREE.MeshBasicMaterial( {color: 0x6B8E23} );
+        // var material = new THREE.MeshBasicMaterial( {color: 0x6B8E23} );
+        var material = new THREE.MeshBasicMaterial( { map: texture } );
         var plane = new THREE.Mesh( plane_geo, material );
-        plane.rotation.x = -1.57;
+        plane.rotation.x = -3.14;
+        plane.rotation.y = 3.14;
+        plane.rotation.z = 3.14;
         Scene.addObject( plane );
-        plane.position.set(0.0, -20.0, 0.0);
-        */
+        //plane.position.set(0.0, -20.0, -300.0);
+        plane.position.set(0.0, 0.0, -1200.0);
     },
 
     // Animation
@@ -408,7 +411,7 @@ SystemSettings.mySystem = {
 
         mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000, morphTargets: true, transparent:true, opacity:0.5 } ) );
         myMesh = mesh;
-        mesh.scale.set( 0.25, 0.25, 0.25 );
+        mesh.scale.set( 0.8, 0.8, 0.8 );
         // mesh.position.set( 0.0, 30.0, 0.0 );
         mesh.rotation.x = -3.14;
         mesh.rotation.z = 3.14;
