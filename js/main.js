@@ -22,6 +22,12 @@ Main.particleSystemChangeCallback = function ( InputSettings ) {
         loader.load( InputSettings.animatedModelName, InputSettings.animationLoadFunction );
     }
 
+    // object thingies
+    if ( InputSettings.objName ) {
+        var loader = new THREE.OBJLoader();
+        loader.load( InputSettings.objName, InputSettings.objectLoadFunction );
+    }
+
     // Create new system
     var initializer = new InputSettings.initializerFunction ( InputSettings.initializerSettings );
 
@@ -59,15 +65,13 @@ Main.particleSystemChangeCallback = function ( InputSettings ) {
 
 // when HTML is finished loading, do this
 window.onload = function() {
-    Student.updateHTML();
-
     // Setup renderer, scene and gui
     Gui.init( Main.controlsChangeCallback,
               Main.displayChangeCallback );
     Scene.create();
 
     // Add particle system
-    Main.particleSystemChangeCallback( SystemSettings.basic );
+    Main.particleSystemChangeCallback( SystemSettings.mySystem );
 
     Renderer.create( Scene, document.getElementById("canvas") );
 

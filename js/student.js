@@ -6,6 +6,7 @@ var Student = {
 };
 
 Student.updateHTML = function( ) {
-    var studentInfo = this.name + ' &lt;' + this.netID + '&gt;';
-    document.getElementById('student').innerHTML = studentInfo;
+	return;
+    //var studentInfo = this.name + ' &lt;' + this.netID + '&gt;';
+    //document.getElementById('student').innerHTML = studentInfo;
 }

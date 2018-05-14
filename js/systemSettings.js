@@ -406,7 +406,7 @@ SystemSettings.mySystem = {
     },
 
     // Animation
-    animatedModelName: "animated_models/stork.js",
+    /*animatedModelName: "animated_models/stork.js",
     animationLoadFunction : function( geometry ) {
 
         mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000, morphTargets: true, transparent:true, opacity:0.5 } ) );
@@ -419,7 +419,18 @@ SystemSettings.mySystem = {
         Scene.addObject( mesh );
         ParticleEngine.addMesh( mesh );
         ParticleEngine.addAnimation( new THREE.MorphAnimation( mesh ) );
-    },
+    }, */
+    objName : "objects/SpaceShip.obj",
+    objectLoadFunction : function ( mesh ) {
+        myMesh = mesh;
+        mesh.scale.set( 10.0, 10.0, 10.0 );
+        // mesh.position.set( 0.0, 30.0, 0.0 );
+        mesh.rotation.x = -3.14;
+        mesh.rotation.z = 3.14;
+        mesh.position.set(0.0, 0.0, 10.0);
+        Scene.addObject( mesh );
+        ParticleEngine.addMesh( mesh );
+    }
 
 };
 
