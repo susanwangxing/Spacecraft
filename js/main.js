@@ -23,9 +23,9 @@ Main.particleSystemChangeCallback = function ( InputSettings ) {
     }
 
     // object thingies
-    if ( InputSettings.objName ) {
-        var loader = new THREE.OBJLoader();
-        loader.load( InputSettings.objName, InputSettings.objectLoadFunction );
+    if ( InputSettings.mtlFile ) {
+        var loader = new THREE.MTLLoader();
+        loader.load( InputSettings.mtlFile, InputSettings.materialLoadFunction );
     }
 
     // Create new system

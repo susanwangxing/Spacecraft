@@ -420,16 +420,23 @@ SystemSettings.mySystem = {
         ParticleEngine.addMesh( mesh );
         ParticleEngine.addAnimation( new THREE.MorphAnimation( mesh ) );
     }, */
-    objName : "objects/SpaceShip.obj",
-    objectLoadFunction : function ( mesh ) {
-        myMesh = mesh;
-        mesh.scale.set( 10.0, 10.0, 10.0 );
-        // mesh.position.set( 0.0, 30.0, 0.0 );
-        mesh.rotation.x = -3.14;
-        mesh.rotation.z = 3.14;
-        mesh.position.set(0.0, 0.0, 10.0);
-        Scene.addObject( mesh );
-        ParticleEngine.addMesh( mesh );
+
+    mtlFile : "objects/SpaceShip.mtl",
+    materialLoadFunction : function ( materials ) {
+        var objName = "objects/SpaceShip.obj"
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.load(objName, function ( mesh ) {
+            myMesh = mesh;
+            mesh.scale.set( 10.0, 10.0, 10.0 );
+            // mesh.position.set( 0.0, 30.0, 0.0 );
+            mesh.rotation.x = -3.14;
+            mesh.rotation.z = 3.14;
+            mesh.position.set(0.0, 0.0, 10.0);
+            Scene.addObject( mesh );
+            ParticleEngine.addMesh( mesh );
+        });
     }
 
 };
