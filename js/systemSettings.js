@@ -403,6 +403,23 @@ SystemSettings.mySystem = {
         Scene.addObject( plane );
         //plane.position.set(0.0, -20.0, -300.0);
         plane.position.set(0.0, 0.0, -1200.0);
+
+        // load asteroid
+        var mtlLoader = new THREE.MTLLoader()
+        mtlLoader.setBaseUrl('objects/');
+        mtlLoader.setPath('objects/');
+        mtlLoader.load('asteroid.mtl', function ( materials ) {
+            var objName = 'objects/asteroid.obj';
+            materials.preload();
+            var objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials( materials );
+            objLoader.load(objName, function ( mesh ) {
+                mesh.rotation.x = -3.14;
+                mesh.rotation.z = 3.14;
+                mesh.position.set(0, 20.0, 50.0);
+                Scene.addObject(mesh);
+            });
+        });
     },
 
     // Animation
@@ -430,7 +447,6 @@ SystemSettings.mySystem = {
         objLoader.load(objName, function ( mesh ) {
             myMesh = mesh;
             mesh.scale.set( 10.0, 10.0, 10.0 );
-            // mesh.position.set( 0.0, 30.0, 0.0 );
             mesh.rotation.x = -3.14;
             mesh.rotation.z = 3.14;
             mesh.position.set(0.0, 0.0, 10.0);
@@ -445,13 +461,13 @@ SystemSettings.mySystem = {
 window.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
     var keyCode = event.which;
-    if (keyCode == 87 || keyCode == 38) {
+    if (keyCode == 87 || keyCode == 38) { // up
         myMesh.position.y += ySpeed;
-    } else if (keyCode == 83 || keyCode == 40) {
+    } else if (keyCode == 83 || keyCode == 40) { // down
         myMesh.position.y -= ySpeed;
-    } else if (keyCode == 65 || keyCode == 37) {
+    } else if (keyCode == 65 || keyCode == 37) {  // left
         myMesh.position.x -= xSpeed;
-    } else if (keyCode == 68 || keyCode == 39) {
+    } else if (keyCode == 68 || keyCode == 39) { //right
         myMesh.position.x += xSpeed;
     } else if (keyCode == 32 || keyCode == 13) {
         myMesh.position.set(0, 0, 0);
