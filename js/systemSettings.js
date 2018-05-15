@@ -84,8 +84,8 @@ SystemSettings.mySystem = {
 
     // will now spawn asteroids.
     asteroids : true,
-    maxAsteroids: 1000,
-    asteroidFrequency: 100
+    maxAsteroids: 500,
+    asteroidFrequency: 50
 
 };
 

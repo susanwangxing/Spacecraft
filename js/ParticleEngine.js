@@ -197,7 +197,7 @@ function Emitter ( opts ) {
         // This is also how you "remove" dead particles
         for ( var i = 0 ; i < this._maxParticleCount ; ++i ) {
             for ( var j = 0 ; j < attributeLength ; ++j ) {
-                attributeArray[ attributeLength * i + j ] = 1e-9;
+                attributeArray[ attributeLength * i + j ] = 1e9;
             }
         }
 
@@ -213,7 +213,7 @@ function Emitter ( opts ) {
         // This is also how you "remove" dead particles
         for ( var i = 0 ; i < this._maxAsteroids ; ++i ) {
             for ( var j = 0 ; j < attributeLength ; ++j ) {
-                attributeArray[ attributeLength * i + j ] = 1e-9;
+                attributeArray[ attributeLength * i + j ] = 1e9;
             }
         }
         this._asteroidInfo.addAttribute( attributeKey, new THREE.BufferAttribute( attributeArray, attributeLength) );
@@ -240,7 +240,7 @@ function Emitter ( opts ) {
         objLoader.setMaterials( materials );
         objLoader.load(objName, function ( mesh ) {
             var refMesh = mesh.children[0];
-            refMesh.position.set(1e-9, 1e-9, 1e-9); // currently unrendered.
+            refMesh.position.set(1e9, 1e9, 1e9); // currently unrendered.
             for (var i = 0; i < scope._maxAsteroids; ++i) {
                 var newMesh = new THREE.Mesh(refMesh.geometry, refMesh.material);
                 newMesh.__ourMeshId = i;

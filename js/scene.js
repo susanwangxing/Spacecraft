@@ -26,10 +26,21 @@ Scene.setupLighting = function() {
     var light = new THREE.AmbientLight( 0x303030 ); // soft white light
 
     this._light    = new THREE.PointLight( 0xffffff, 2.0, 500.0 );
-    this._light .position.set( 0, 250, 0 );
+    this._light.position.set( 0, 250, 0 );
+
+    var light2 = new THREE.PointLight( 0xffffff, 2.0, 500.0)
+    light2.position.set(-5, -5, -5);
+
+    var backLight = new THREE.PointLight( 0xffffff, 5.0, 500.0);
+    backLight.position.set(0, 0, -1100);
 
     // Scene._scene.add( light );
     Scene._scene.add( this._light  );
+    Scene._scene.add( light );
+    Scene._scene.add( light2 );
+    Scene._scene.add( backLight );
+
+
 };
 
 // Materials

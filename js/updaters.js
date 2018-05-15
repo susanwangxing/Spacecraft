@@ -196,6 +196,13 @@ MyUpdater.prototype.updateAsteroids = function ( asteroids, asteroidAttributes, 
         var vel = getElement(i, velocities);
         asteroids[i].position.add(vel.clone().multiplyScalar(delta_t));
 
+        // kill if behind spaceship
+        if (asteroids[i].position.z > 20) {
+            alive[i] = false;
+            asteroids[i].position.set(1e9, 1e9, 1e9);
+            continue;
+        }
+
         // update rotation
         var rotVel = getElement(i, rotations);
         asteroids[i].rotation.y += rotVel * delta_t;
