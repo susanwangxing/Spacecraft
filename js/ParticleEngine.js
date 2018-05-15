@@ -102,6 +102,10 @@ var ParticleEngine = ParticleEngine || new ( function() {
         return _self._emitters;
     }
 
+    _self.getAsteroids = function ( emitter_idx ) {
+        return _self._emitters[emitter_idx].getAsteroids();
+    }
+
     return _self;
 })();
 
@@ -115,6 +119,9 @@ function Emitter ( opts ) {
     this._cloth                = false;
     this._width                = undefined;
     this._height               = undefined;
+    this._maxAsteroids         = undefined;
+    this._asteroidFrequency    = undefined;
+    this._asteroidsReady       = false;
     this._attributeInformation = {
         position:      3,
         velocity:      3,
@@ -122,6 +129,10 @@ function Emitter ( opts ) {
         size:          1,
         lifetime:      1,
         dampening:     3
+    };
+    this._asteroidInformation = {
+        velocity: 3, 
+        rotation: 1
     };
 
     // parse options
@@ -145,6 +156,10 @@ function Emitter ( opts ) {
             this._width = value;
         } else if ( option === "height" ) {
             this._height = value;
+        } else if ( option === "maxAsteroids" ) {
+            this._maxAsteroids = value;
+        } else if ( option === "asteroidFrequency" ) {
+            this._asteroidFrequency = value;
         } else {
             console.log( "Unknown option " + option + "! Make sure to register it!" )
         }
@@ -159,7 +174,11 @@ function Emitter ( opts ) {
     // For example, attributes given to THREE.BufferGeometry will depend on attributeInformation
     // variable.
     this._particles          = new THREE.BufferGeometry();
-    this._initialized        = [];
+    this._initialized        = []; // this is the alive array
+    this._asteroids          = [];
+    this._asteroidInit       = []; // this will be asteroids alive
+    this._asteroidInfo       = new THREE.BufferGeometry();
+
 
     // Store indices of available particles - these are not initialized yet
     for ( var i = 0 ; i < this._maxParticleCount ; ++i ) {
@@ -184,27 +203,21 @@ function Emitter ( opts ) {
         this._particles.addAttribute( attributeKey, new THREE.BufferAttribute( attributeArray, attributeLength ) );
     }
 
-    // in case of cloth we need to describe to webGL how to render it.
-    if( this._cloth === true ) {
+    for ( var attributeKey in this._asteroidInformation ) {
+        var attributeLength = this._asteroidInformation[ attributeKey ];
+        var attributeArray = new Float32Array( this._maxAsteroids * attributeLength );
 
-        var indices = new Uint16Array( (this._width - 1) * (this._height - 1) * 6 );
-        var idx = 0;
-        for ( var i = 0 ; i < this._width - 1 ; i++ ) {
-            for ( var j = 0 ; j < this._height - 1 ; j++ ) {
-                indices[ 6 * idx + 0 ] = j * this._width + i;
-                indices[ 6 * idx + 1 ] = (j + 1) * this._width + i;
-                indices[ 6 * idx + 2 ] = j * this._width + i + 1;
-
-                indices[ 6 * idx + 3 ] = (j + 1) * this._width + i;
-                indices[ 6 * idx + 4 ] = (j + 1) * this._width + i + 1;
-                indices[ 6 * idx + 5 ] = j * this._width + i + 1;
-
-                idx += 1;
+        // Since these are zero - initialized, they will appear in the scene.
+        // By setting all to be negative infinity we will effectively remove these from rendering.
+        // This is also how you "remove" dead particles
+        for ( var i = 0 ; i < this._maxAsteroids ; ++i ) {
+            for ( var j = 0 ; j < attributeLength ; ++j ) {
+                attributeArray[ attributeLength * i + j ] = 1e-9;
             }
         }
-        this._particles.addAttribute( 'index', new THREE.BufferAttribute( indices, 3 ) );
-        this._particles.computeVertexNormals();
+        this._asteroidInfo.addAttribute( attributeKey, new THREE.BufferAttribute( attributeArray, attributeLength) );
     }
+    console.log(this._asteroidInfo)
 
     this._particleAttributes = this._particles.attributes; // for convenience / less writing / not sure / #badprogramming
 
@@ -213,11 +226,33 @@ function Emitter ( opts ) {
     this._backupArray = new Float32Array( this._maxParticleCount * 4 );
 
     // Create the drawable particles - this is the object that three.js will use to draw stuff onto screen
-    if ( this._cloth === true ) {
-        this._drawableParticles = new THREE.Mesh( this._particles, this._material );
-    } else {
-        this._drawableParticles = new THREE.PointCloud( this._particles, this._material );
-    }
+    this._drawableParticles = new THREE.PointCloud( this._particles, this._material );
+
+     // load asteroids all at once
+    var scope = this;
+    var mtlLoader = new THREE.MTLLoader()
+    mtlLoader.setBaseUrl('objects/');
+    mtlLoader.setPath('objects/');
+    mtlLoader.load('asteroid.mtl', function ( materials ) {
+        var objName = 'objects/asteroid.obj';
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.load(objName, function ( mesh ) {
+            var refMesh = mesh.children[0];
+            refMesh.position.set(1e-9, 1e-9, 1e-9); // currently unrendered.
+            for (var i = 0; i < scope._maxAsteroids; ++i) {
+                var newMesh = new THREE.Mesh(refMesh.geometry, refMesh.material);
+                newMesh.__ourMeshId = i;
+                scope._asteroids[i] = newMesh;
+                scope._asteroidInit[i] = false;
+                Scene.addObject(newMesh);
+            }
+            console.log('asteroids ready');
+            scope._asteroidsReady = true;
+
+        });
+    });
 
     return this;
 };
@@ -250,13 +285,20 @@ Emitter.prototype.restart = function() {
 Emitter.prototype.update = function( delta_t ) {
     // how many particles should we add?
     var toAdd = Math.floor( delta_t * this._particlesPerSecond );
-
+    var asteroidsToAdd = Math.floor( delta_t * this._asteroidFrequency );
+    toAdd = 0;
     if ( toAdd > 0 ) {
-        this._initializer.initialize ( this._particleAttributes, this.getSpawnable( toAdd ), this._width, this._height );
+        this._initializer.initialize( this._particleAttributes, this.getSpawnable( toAdd ), this._width, this._height );
     }
 
-    // add check for existence
-    this._updater.update( this._particleAttributes, this._initialized, delta_t, this._width, this._height );
+    if ( this._asteroidsReady && asteroidsToAdd > 0 ) {
+        this._initializer.initializeAsteroids( this._asteroids, this._asteroidInfo.attributes, this.getSpawnableAsteroids( asteroidsToAdd ) );
+    }
+
+    // particle updates
+    //this._updater.update( this._particleAttributes, this._initialized, delta_t, this._width, this._height );
+    if (this._asteroidsReady)
+        this._updater.updateAsteroids( this._asteroids, this._asteroidInfo.attributes, this._asteroidInit, delta_t );
 
     // sorting -> Move it to camera update / loop update so that it is updated each time even if time is paused?
     if ( this._sorting === true ) {
@@ -265,11 +307,6 @@ Emitter.prototype.update = function( delta_t ) {
 
     // for visibility culling
     this._drawableParticles.geometry.computeBoundingSphere();
-
-    // particle position change each frame so we need
-    if ( this._cloth === true ) {
-        this._particles.computeVertexNormals();
-    }
 }
 
 
@@ -280,6 +317,10 @@ Emitter.prototype.enableSorting = function( val ) {
 Emitter.prototype.getDrawableParticles = function () {
     return this._drawableParticles;
 };
+
+Emitter.prototype.getAsteroids = function () {
+    return this._asteroids;
+}
 
 Emitter.prototype.sortParticles = function () {
     var positions  = this._particleAttributes.position;
@@ -319,6 +360,20 @@ Emitter.prototype.sortParticles = function () {
         this._initialized[ i ] = initialized_cpy[i];
     }
 };
+
+Emitter.prototype.getSpawnableAsteroids = function ( asteroidsToAdd ) {
+    var asteroidsToSpawn = [];
+    for ( var i = 0 ; i < this._maxAsteroids ; ++i ) {
+
+        if ( this._asteroidInit[i] ) continue;
+        if ( asteroidsToSpawn.length >= asteroidsToAdd ) break;
+        this._asteroidInit[i] = true;
+        asteroidsToSpawn.push(i);
+
+    }
+
+    return asteroidsToSpawn;
+}
 
 Emitter.prototype.getSpawnable = function ( toAdd ) {
     var toSpawn = [];

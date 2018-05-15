@@ -39,15 +39,13 @@ Main.particleSystemChangeCallback = function ( InputSettings ) {
         initialize:    initializer,                  // initializer object
         update:        updater,                      // updater object
         material:      InputSettings.particleMaterial,
-        cloth:         InputSettings.cloth,
         width:         InputSettings.width,
         height:        InputSettings.height,
+        maxAsteroids:  InputSettings.maxAsteroids,
+        asteroidFrequency: InputSettings.asteroidFrequency
     } );
 
-    // If we are not dealing with cloth, lets sort particles
-    if ( !InputSettings.cloth ) {
-        emitter.enableSorting( Gui.values.sorting );
-    }
+    emitter.enableSorting( Gui.values.sorting );
 
     ParticleEngine.addEmitter ( emitter );
 
@@ -56,8 +54,10 @@ Main.particleSystemChangeCallback = function ( InputSettings ) {
 
     // Add the particle system
     for ( var i = 0 ; i < ParticleEngine._emitters.length ; ++i ) {
-        Scene.addObject( ParticleEngine.getDrawableParticles( i ) );
+        var obj = ParticleEngine.getDrawableParticles( i );
+        Scene.addObject( obj );
     }
+
 
     // Create the scene
     InputSettings.createScene();

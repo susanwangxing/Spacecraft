@@ -577,4 +577,39 @@ MyInitializer.prototype.initialize = function ( particleAttributes, toSpawn ) {
 
 };
 
+MyInitializer.prototype.initializeAsteroids = function ( asteroids, asteroidAttributes, asteroidsToSpawn ) {
+    //this.initializeAsteroidEverything( asteroids, asteroidAttributes, asteroidsToSpawn );
+    var velocities = asteroidAttributes.velocity;
+    var rotation = asteroidAttributes.rotation; 
+    for ( var i = 0; i < asteroidsToSpawn.length; ++i ) {
+        var idx = asteroidsToSpawn[i];
+        var mesh = asteroids[idx];
+
+        // position
+        var x = Math.random() * 2667 - 2667 / 2;
+        var y = Math.random() * 1500 - 1500 / 2;
+        var z = -1150;
+        mesh.position.set(x, y, z);
+
+        // size
+        var scale = Math.random() * 8 + 1;
+        mesh.scale.set(scale, scale, scale);
+
+        // velocity
+        var baseVel = new THREE.Vector3(0.0, 0.0, 100 / scale); // smaller things move faster
+        setElement(idx, velocities, baseVel);
+
+        // rotation
+        var xRot = Math.random() * 6.28;
+        var yRot = Math.random() * 6.28;
+        var zRot = Math.random() * 6.28;
+        mesh.rotation.x = xRot;
+        mesh.rotation.y = yRot;
+        mesh.rotation.z = zRot;
+        var rotVel = Math.random() * 3.14;
+        setElement(idx, rotation, rotVel);
+
+    }
+}
+
 
