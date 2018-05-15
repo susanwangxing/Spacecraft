@@ -37,8 +37,7 @@ SystemSettings.mySystem = {
         velocity: new THREE.Vector3 ( 0.0, 0.0, -100.0),
         color:    new THREE.Vector4 ( 0.9, 0.7, 0.1, 1.0 ),
         lifetime: 8,
-        size:     50.0,
-        aLifetime: 50
+        size:     100.0,
     },
 
     // Updater
@@ -72,6 +71,7 @@ SystemSettings.mySystem = {
         var objLoader = new THREE.OBJLoader();
         objLoader.setMaterials( materials );
         objLoader.load(objName, function ( mesh ) {
+            console.log(mesh);
             SystemSettings._myMesh = mesh;
             mesh.scale.set( 10.0, 10.0, 10.0 );
             mesh.rotation.x = -3.14;
@@ -84,8 +84,8 @@ SystemSettings.mySystem = {
 
     // will now spawn asteroids.
     asteroids : true,
-    maxAsteroids: 500,
-    asteroidFrequency: 50
+    maxAsteroids: 250,
+    asteroidFrequency: 25
 
 };
 

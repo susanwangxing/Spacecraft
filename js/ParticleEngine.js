@@ -294,9 +294,11 @@ Emitter.prototype.update = function( delta_t ) {
         this._initializer.initializeAsteroids( this._asteroids, this._asteroidInfo.attributes, this.getSpawnableAsteroids( asteroidsToAdd ) );
     }
 
+
     // particle updates
     this._updater.update( this._particleAttributes, this._initialized, delta_t, this._width, this._height );
     if (this._asteroidsReady)
+        this._updater.handleCollisions( this._asteroids, this._asteroidInfo.attributes, this._particleAttributes, this._initialized, this._asteroidInit);
         this._updater.updateAsteroids( this._asteroids, this._asteroidInfo.attributes, this._asteroidInit, delta_t );
 
     // sorting -> Move it to camera update / loop update so that it is updated each time even if time is paused?

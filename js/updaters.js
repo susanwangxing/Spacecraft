@@ -187,6 +187,52 @@ MyUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
 
 };
 
+MyUpdater.prototype.handleCollisions = function ( asteroids, asteroidAttributes, particleAttributes, alive, asteroidsAlive ) {
+    // first check with collision with mesh
+    var spaceship = SystemSettings._myMesh;
+    if (spaceship === undefined) return;
+    spaceship.children[0].geometry.computeBoundingBox();
+    spaceship.children[1].geometry.computeBoundingBox();
+    var ssBboxTop = spaceship.children[0].geometry.boundingBox;
+    var ssBboxBody = spaceship.children[1].geometry.boundingBox;
+    var bSphere = []; // hold asteroid bounding spheres so no need to recompute
+    for (var i = 0; i < asteroidsAlive.length; ++i) {
+        if (!asteroidsAlive[i]) continue;
+        if ( spaceship.position.distanceTo(asteroids[i].position) < 60 ) {
+            asteroids[i].geometry.computeBoundingSphere();
+            bSphere[i] = asteroids[i].geometry.boundingSphere;
+
+            if (ssBboxTop.intersectsSphere(bSphere[i]) || ssBboxBody.intersectsSphere(bSphere[i]))
+                ParticleEngine.stop();
+                Gui.alertOnce('Game Over');
+        }
+    }
+
+    // then check collisions between points and asteroid
+    var positions = particleAttributes.position;
+    for (var i = 0 ; i < alive.length; ++i ) {
+        if (!alive[i]) continue;
+        var pos = getElement(i, positions);
+        for (var j = 0; j < asteroidsAlive.length; ++j) {
+            if (!asteroidsAlive[j]) continue;
+            if (pos.distanceTo(asteroids[j].position) < 20) {
+                // if collision, kill particle and kill asteroid
+                if (bSphere[j] === undefined) {
+                    asteroids[j].geometry.computeBoundingSphere();
+                    bSphere[j] = asteroids[j].geometry.boundingSphere;
+                }
+                if (bSphere[j].containsPoint(pos)) {
+                    killPartilce(i, particleAttributes, alive)
+                    asteroidsAlive[j] = false;
+                    asteroids[j].position.set(1e9, 1e9, 1e9);
+                }
+            }
+        }
+    }    
+    positions.needsUpdate = true;
+    // possibly play asteroid death animation (spawn brown particles)
+}
+
 MyUpdater.prototype.updateAsteroids = function ( asteroids, asteroidAttributes, alive, delta_t ) {
     var velocities = asteroidAttributes.velocity;
     var rotations = asteroidAttributes.rotation;
@@ -197,7 +243,7 @@ MyUpdater.prototype.updateAsteroids = function ( asteroids, asteroidAttributes, 
         asteroids[i].position.add(vel.clone().multiplyScalar(delta_t));
 
         // kill if behind spaceship
-        if (asteroids[i].position.z > 20) {
+        if (asteroids[i].position.z > 40) {
             alive[i] = false;
             asteroids[i].position.set(1e9, 1e9, 1e9);
             continue;
