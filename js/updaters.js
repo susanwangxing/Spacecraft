@@ -201,7 +201,6 @@ MyUpdater.prototype.handleCollisions = function ( asteroids, asteroidAttributes,
         if ( spaceship.position.distanceTo(asteroids[i].position) < 60 ) {
             asteroids[i].geometry.computeBoundingSphere();
             bSphere[i] = asteroids[i].geometry.boundingSphere;
-
             if (ssBboxTop.intersectsSphere(bSphere[i]) || ssBboxBody.intersectsSphere(bSphere[i]))
                 ParticleEngine.stop();
                 Gui.alertOnce('Game Over');
@@ -215,18 +214,10 @@ MyUpdater.prototype.handleCollisions = function ( asteroids, asteroidAttributes,
         var pos = getElement(i, positions);
         for (var j = 0; j < asteroidsAlive.length; ++j) {
             if (!asteroidsAlive[j]) continue;
-            if (pos.distanceTo(asteroids[j].position) < 20) {
-                // if collision, kill particle and kill asteroid
-                if (bSphere[j] === undefined) {
-                    asteroids[j].geometry.computeBoundingSphere();
-                    bSphere[j] = asteroids[j].geometry.boundingSphere;
-                }
-                if (bSphere[j].containsPoint(pos)) {
-                    killPartilce(i, particleAttributes, alive)
-                    asteroidsAlive[j] = false;
-                    asteroids[j].position.set(1e9, 1e9, 1e9);
-                }
-            }
+            if (pos.distanceTo(asteroids[j].position) < asteroids[j].scale.x * 3.608) {
+                killPartilce(i, particleAttributes, alive)
+                asteroidsAlive[j] = false;
+                asteroids[j].position.set(1e9, 1e9, 1e9);            }
         }
     }    
     positions.needsUpdate = true;

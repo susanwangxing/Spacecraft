@@ -71,7 +71,6 @@ SystemSettings.mySystem = {
         var objLoader = new THREE.OBJLoader();
         objLoader.setMaterials( materials );
         objLoader.load(objName, function ( mesh ) {
-            console.log(mesh);
             SystemSettings._myMesh = mesh;
             mesh.scale.set( 10.0, 10.0, 10.0 );
             mesh.rotation.x = -3.14;

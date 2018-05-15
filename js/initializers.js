@@ -593,7 +593,7 @@ MyInitializer.prototype.initializeAsteroids = function ( asteroids, asteroidAttr
         // position
         var x = Math.random() * 2667 - 2667 / 2;
         var y = Math.random() * 1500 - 1500 / 2;
-        var z = -1150;
+        var z = -500;
         mesh.position.set(x, y, z);
 
         // size
