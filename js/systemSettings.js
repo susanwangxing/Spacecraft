@@ -22,7 +22,7 @@ SystemSettings.standardMaterial = new THREE.ShaderMaterial( {
 
 } );
 
-var myMesh;
+//var myMesh;
 var xSpeed = 2.0;
 var ySpeed = 2.0;
 SystemSettings.mySystem = {
@@ -33,18 +33,19 @@ SystemSettings.mySystem = {
     // Initializer
     initializerFunction : MyInitializer,
     initializerSettings : {
-        position: new THREE.Vector3 ( 0.0, 30.0, 0.0),
-        velocity: new THREE.Vector3 ( 5.0, 5.0, 5.0),
+        position: new THREE.Vector3 ( 0.0, 0.0, 0.0),
+        velocity: new THREE.Vector3 ( 0.0, 0.0, -100.0),
         color:    new THREE.Vector4 ( 0.9, 0.7, 0.1, 1.0 ),
-        lifetime: 5,
+        lifetime: 8,
         size:     50.0,
+        aLifetime: 50
     },
 
     // Updater
     updaterFunction : MyUpdater,
     updaterSettings : {
          externalForces : {
-            gravity :     new THREE.Vector3( 0.0, 0.0, 100),
+            gravity :     new THREE.Vector3( 0.0, 0.0, 0.0),
         },
     },
 
@@ -71,7 +72,7 @@ SystemSettings.mySystem = {
         var objLoader = new THREE.OBJLoader();
         objLoader.setMaterials( materials );
         objLoader.load(objName, function ( mesh ) {
-            myMesh = mesh;
+            SystemSettings._myMesh = mesh;
             mesh.scale.set( 10.0, 10.0, 10.0 );
             mesh.rotation.x = -3.14;
             mesh.rotation.z = 3.14;
@@ -93,14 +94,14 @@ window.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
     var keyCode = event.which;
     if (keyCode == 87 || keyCode == 38) { // up
-        myMesh.position.y += ySpeed;
+        SystemSettings._myMesh.position.y += ySpeed;
     } else if (keyCode == 83 || keyCode == 40) { // down
-        myMesh.position.y -= ySpeed;
+        SystemSettings._myMesh.position.y -= ySpeed;
     } else if (keyCode == 65 || keyCode == 37) {  // left
-        myMesh.position.x -= xSpeed;
+        SystemSettings._myMesh.position.x -= xSpeed;
     } else if (keyCode == 68 || keyCode == 39) { //right
-        myMesh.position.x += xSpeed;
-    } else if (keyCode == 32 || keyCode == 13) {
-        myMesh.position.set(0, 0, 0);
+        SystemSettings._myMesh.position.x += xSpeed;
+    } else if (keyCode == 13) {
+        SystemSettings._myMesh.position.set(0, 0, 0);
     }
 };

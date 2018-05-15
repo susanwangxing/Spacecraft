@@ -45,7 +45,7 @@ SphereInitializer.prototype.initializePositions = function ( positions, toSpawn)
         setElement( idx, positions, pos );
 
     }
-    positions.needUpdate = true;
+    positions.needsUpdate = true;
 }
 
 SphereInitializer.prototype.initializeVelocities = function ( velocities, dampenings, positions, toSpawn ) {
@@ -63,7 +63,7 @@ SphereInitializer.prototype.initializeVelocities = function ( velocities, dampen
         var damp = new THREE.Vector3(this._opts.damping.x,this._opts.damping.y,0);
         setElement( idx, dampenings, damp); 
     }
-    velocities.needUpdate = true;
+    velocities.needsUpdate = true;
 }
 
 SphereInitializer.prototype.initializeColors = function ( colors, toSpawn ) {
@@ -499,19 +499,24 @@ function MyInitializer ( opts ) {
     return this;
 };
 
-MyInitializer.prototype.initializePositions = function ( positions, toSpawn) {
+MyInitializer.prototype.initializePositions = function ( positions, toSpawn ) {
     var base_pos = this._opts.position;
+    var meshPos = SystemSettings._myMesh;
+    if (meshPos === undefined) return;
+    meshPos = meshPos.position;
+    var shipRadius = 32;
+    var y = meshPos.y - 9.5;
     for ( var i = 0 ; i < toSpawn.length ; ++i ) {
         var idx = toSpawn[i];
-        var x = Math.random() * 100 - 50;
-        var y = Math.random() * 100 - 50;
-        var z = -50;
+        var x = meshPos.x + shipRadius;
+        shipRadius *= -1;
+        var z = -40;
         var pos = new THREE.Vector3(x, y, z);
         pos.add(base_pos);
         setElement( idx, positions, pos );
 
     }
-    positions.needUpdate = true;
+    positions.needsUpdate = true;
 }
 
 MyInitializer.prototype.initializeVelocities = function ( velocities, positions, toSpawn ) {
@@ -520,12 +525,12 @@ MyInitializer.prototype.initializeVelocities = function ( velocities, positions,
         var idx = toSpawn[i];
         // ----------- STUDENT CODE BEGIN ------------
         // just to get started, make the velocity the same as the initial position
-        var vel = new THREE.Vector3(0, -10, 0);
+        var vel = base_vel;
 
         // ----------- STUDENT CODE END ------------
         setElement( idx, velocities, vel );
     }
-    velocities.needUpdate = true;
+    velocities.needsUpdate = true;
 }
 
 MyInitializer.prototype.initializeColors = function ( colors, toSpawn ) {
@@ -538,7 +543,7 @@ MyInitializer.prototype.initializeColors = function ( colors, toSpawn ) {
         // ----------- STUDENT CODE END ------------
         setElement( idx, colors, col );
     }
-    colors.needUpdate = true;
+    colors.needsUpdate = true;
 }
 
 MyInitializer.prototype.initializeSizes = function ( sizes, toSpawn ) {
@@ -551,7 +556,7 @@ MyInitializer.prototype.initializeSizes = function ( sizes, toSpawn ) {
         // ----------- STUDENT CODE END ------------
         setElement( idx, sizes, size );
     }
-    sizes.needUpdate = true;
+    sizes.needsUpdate = true;
 }
 
 MyInitializer.prototype.initializeLifetimes = function ( lifetimes, toSpawn ) {
@@ -564,7 +569,7 @@ MyInitializer.prototype.initializeLifetimes = function ( lifetimes, toSpawn ) {
         // ----------- STUDENT CODE END ------------
         setElement( idx, lifetimes, lifetime );
     }
-    lifetimes.needUpdate = true;
+    lifetimes.needsUpdate = true;
 }
 
 
@@ -609,7 +614,10 @@ MyInitializer.prototype.initializeAsteroids = function ( asteroids, asteroidAttr
         var rotVel = Math.random() * 3.14;
         setElement(idx, rotation, rotVel);
 
+
     }
+    velocities.needsUpdate = true;
+    rotation.needsUpdate = true;
 }
 
 

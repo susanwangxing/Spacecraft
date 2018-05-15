@@ -132,7 +132,8 @@ function Emitter ( opts ) {
     };
     this._asteroidInformation = {
         velocity: 3, 
-        rotation: 1
+        rotation: 1,
+        lifetime: 1
     };
 
     // parse options
@@ -217,7 +218,6 @@ function Emitter ( opts ) {
         }
         this._asteroidInfo.addAttribute( attributeKey, new THREE.BufferAttribute( attributeArray, attributeLength) );
     }
-    console.log(this._asteroidInfo)
 
     this._particleAttributes = this._particles.attributes; // for convenience / less writing / not sure / #badprogramming
 
@@ -284,19 +284,18 @@ Emitter.prototype.restart = function() {
 
 Emitter.prototype.update = function( delta_t ) {
     // how many particles should we add?
-    var toAdd = Math.floor( delta_t * this._particlesPerSecond );
+    //var toAdd = Math.floor( delta_t * this._particlesPerSecond );
     var asteroidsToAdd = Math.floor( delta_t * this._asteroidFrequency );
-    toAdd = 0;
-    if ( toAdd > 0 ) {
+    /* if ( toAdd > 0 ) {
         this._initializer.initialize( this._particleAttributes, this.getSpawnable( toAdd ), this._width, this._height );
-    }
+    } */
 
     if ( this._asteroidsReady && asteroidsToAdd > 0 ) {
         this._initializer.initializeAsteroids( this._asteroids, this._asteroidInfo.attributes, this.getSpawnableAsteroids( asteroidsToAdd ) );
     }
 
     // particle updates
-    //this._updater.update( this._particleAttributes, this._initialized, delta_t, this._width, this._height );
+    this._updater.update( this._particleAttributes, this._initialized, delta_t, this._width, this._height );
     if (this._asteroidsReady)
         this._updater.updateAsteroids( this._asteroids, this._asteroidInfo.attributes, this._asteroidInit, delta_t );
 
@@ -388,4 +387,21 @@ Emitter.prototype.getSpawnable = function ( toAdd ) {
 
     return toSpawn;
 };
+
+window.addEventListener("keydown", onShootKeyDown, false);
+
+// shoot two bullets
+function onShootKeyDown( event ) {
+    var key = event.key;
+    if (key === ' ') {
+        var toAdd = 2; // spawn 2 shots every time
+        var emitters = ParticleEngine.getEmitters();
+        for (var i = 0; i < emitters.length; i++) {
+            var toSpawn = emitters[i].getSpawnable( toAdd );
+            emitters[i]._initializer.initialize( emitters[i]._particleAttributes, toSpawn , emitters[i]._width, emitters[i]._height );
+
+        }
+
+    }
+}
 
